@@ -4,5 +4,7 @@ services:
     build: ./bot
     env_file:
       - .env
+    volumes:
+      - ./messages.json:/app/messages.json
     restart: unless-stopped
 

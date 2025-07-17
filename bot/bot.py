@@ -1,5 +1,6 @@
 import logging
 import os
+import json
 from uuid import uuid4
 
 from telegram import (
@@ -16,6 +17,10 @@ from telegram.ext import (
     ContextTypes,
 )
 from telegram.error import TelegramError
+
+# Cargar mensajes desde messages.json
+with open('messages.json', encoding='utf-8') as f:
+    MSG = json.load(f)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -36,14 +41,15 @@ async def set_mode(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # Alternar modo
         if FORWARD_MODE == "auto":
             FORWARD_MODE = "buttons"
+            await update.message.reply_text(MSG["mode_toggled"].format(mode=FORWARD_MODE))
         else:
             FORWARD_MODE = "auto"
-        await update.message.reply_text(f"Modo de envío alternado a: {FORWARD_MODE}")
+            await update.message.reply_text(MSG["mode_toggled"].format(mode=FORWARD_MODE))
     elif args[0].lower() in ["auto", "buttons"]:
         FORWARD_MODE = args[0].lower()
-        await update.message.reply_text(f"Modo de envío cambiado a: {FORWARD_MODE}")
+        await update.message.reply_text(MSG["mode_changed"].format(mode=FORWARD_MODE))
     else:
-        await update.message.reply_text("Uso: /modo [auto|buttons]")
+        await update.message.reply_text(MSG["mode_usage"])
 
 async def delete_original_message(chat_id, message_id, context: ContextTypes.DEFAULT_TYPE):
     try:
@@ -99,13 +105,13 @@ async def forward_media(update: Update, context: ContextTypes.DEFAULT_TYPE):
             keyboard = InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton("➡️ Reenviar", callback_data=f"forward|{short_id}"),
-                        InlineKeyboardButton("❌ Descartar", callback_data=f"discard|{short_id}"),
+                        InlineKeyboardButton(MSG["forward_button"], callback_data=f"forward|{short_id}"),
+                        InlineKeyboardButton(MSG["discard_button"], callback_data=f"discard|{short_id}"),
                     ]
                 ]
             )
             await update.message.reply_text(
-                "¿Quieres reenviar o descartar este mensaje?",
+                MSG["choose_action"],
                 reply_markup=keyboard,
             )
         else:
@@ -138,7 +144,6 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         if action == "forward":
             await forward_media_to_target(context, entry["media_type"], entry["file_id"])
-        # 'discard' no hace nada más
 
         # Borrar mensaje con botones
         try:
