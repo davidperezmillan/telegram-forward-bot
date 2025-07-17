@@ -1,0 +1,4 @@
+TELEGRAM_TOKEN=# Token del bot que escucha
+TARGET_CHAT_ID=# ID del chat al que se envían los mensajes
+FORWARD_MODE=# auto/buttons
+
