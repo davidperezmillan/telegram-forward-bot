@@ -54,6 +54,7 @@ async def button_callback(update, context):
 import aiohttp
 
 async def save_media_to_disk(context, media_type, file_id):
+    file = None
     try:
         # Crear directorio si no existe
         if not os.path.exists(MEDIA_SAVE_PATH):
