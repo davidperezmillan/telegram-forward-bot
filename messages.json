@@ -2,6 +2,7 @@
     "choose_action": "¿Quieres reenviar o descartar este mensaje?",
     "forward_button": "➡️ Reenviar",
     "discard_button": "❌ Descartar",
+    "save_button": "Guardar en disco",
     "mode_changed": "Modo de envío cambiado a: {mode}",
     "mode_toggled": "Modo de envío alternado a: {mode}",
     "mode_usage": "Uso: /modo [auto|buttons]"
