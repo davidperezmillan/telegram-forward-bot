@@ -8,6 +8,6 @@ services:
       - TARGET_CHAT_ID=${TARGET_CHAT_ID}
       - FORWARD_MODE=${FORWARD_MODE}
     volumes:
-      - ./media:/app/media
+      - ${DOWNLOAD_DIR}:/app/media
     restart: unless-stopped
 
