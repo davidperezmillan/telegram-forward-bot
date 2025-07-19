@@ -77,6 +77,9 @@ async def save_media_to_disk(context, media_type, file_id):
                 else:
                     logger.error(f"Error al descargar el archivo: HTTP {response.status}")
     except TelegramError as e:
-        logger.error(f"Error de Telegram al obtener el archivo: {e}", exc_info=True)
+        if "File is too big" in str(e):
+            logger.error(f"El archivo con file_id {file_id} es demasiado grande para descargarlo. Tamaño: {file.file_size} bytes", exc_info=True)
+        else:
+            logger.error(f"Error de Telegram al obtener el archivo: {e}", exc_info=True)
     except Exception as e:
         logger.error(f"Error al guardar el archivo en disco: {e}", exc_info=True)
