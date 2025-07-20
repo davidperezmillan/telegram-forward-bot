@@ -48,7 +48,7 @@ async def button_callback(update, context):
     except Exception as e:
         logger.error(f"Error manejando callback del botón: {e}", exc_info=True)
 
-    MEDIA_CACHE.pop(short_id, None)
+    # MEDIA_CACHE.pop(short_id, None)
 
 
 async def save_media_to_disk(context, media_type, file_id):
@@ -77,9 +77,13 @@ async def save_media_to_disk(context, media_type, file_id):
                 else:
                     logger.error(f"Error al descargar el archivo: HTTP {response.status}")
     except TelegramError as e:
-        if "File is too big" in str(e) and file is not None:  # Check if file is defined
-            logger.error(f"El archivo con file_id {file_id} es demasiado grande para descargarlo. Tamaño: {file.file_size} bytes", exc_info=True)
-        else:
-            logger.error(f"Error de Telegram al obtener el archivo: {e}", exc_info=True)
+        # Manejo de errores específicos de Telegram
+        msgError = f"Error de Telegram al obtener el archivo con file_id {file_id}: {e}"
+        if file is not None:  # Check if file is defined
+            msgError = f"El archivo con file_id {file_id} es demasiado grande para descargarlo. Tamaño: {file.file_size} bytes"
+        # responder al mensaje
+        logger.error(f"{msgError}", exc_info=False)
+
+
     except Exception as e:
         logger.error(f"Error al guardar el archivo en disco: {e}", exc_info=True)
