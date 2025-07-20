@@ -61,7 +61,7 @@ async def save_media_to_disk(context, media_type, file_id):
         logger.info(f"Iniciando descarga del archivo con file_id: {file_id} y tipo: {media_type}")
         file = await context.bot.get_file(file_id)
         logger.info(f"URL del archivo: {file.file_path}")
-        logger.info(f"Guardando archivo en disco... tamaño:  {file.file_size} bytes" )
+        logger.info(f"Guardando archivo en disco... tamaño: {file.file_size} bytes")
 
         # Determina la extensión del archivo
         file_extension = "jpg" if media_type == "photo" else "mp4" if media_type == "video" else "bin"
