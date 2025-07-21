@@ -37,7 +37,7 @@ async def button_callback(update, context):
             await delete_original_message(entry["chat_id"], entry["message_id"], context)
             await delete_original_message(query.message.chat_id, query.message.message_id, context)
         elif action == "save":
-            await save_media_to_disk(context, entry["media_type"], entry["file_id"])
+            await save_media_to_disk(context, entry["media_type"], entry["file_id"], query.message.chat_id,)
         elif action == "discard":
             await delete_original_message(entry["chat_id"], entry["message_id"], context)
             await delete_original_message(query.message.chat_id, query.message.message_id, context)
@@ -50,8 +50,7 @@ async def button_callback(update, context):
 
     # MEDIA_CACHE.pop(short_id, None)
 
-
-async def save_media_to_disk(context, media_type, file_id):
+async def save_media_to_disk(context, media_type, file_id, chat_bot_id):
     file = None
     try:
         # Crear directorio si no existe
@@ -74,6 +73,12 @@ async def save_media_to_disk(context, media_type, file_id):
                     with open(file_path, 'wb') as f:
                         f.write(await response.read())
                     logger.info(f"Archivo guardado en disco: {file_path}")
+
+                    # editar mensaje
+                    await context.bot.send_message(
+                        chat_id=chat_bot_id,    
+                        text=f"✅ Archivo descargado correctamente"
+                    )
                 else:
                     logger.error(f"Error al descargar el archivo: HTTP {response.status}")
     except TelegramError as e:
@@ -81,9 +86,7 @@ async def save_media_to_disk(context, media_type, file_id):
         msgError = f"Error de Telegram al obtener el archivo con file_id {file_id}: {e}"
         if file is not None:  # Check if file is defined
             msgError = f"El archivo con file_id {file_id} es demasiado grande para descargarlo. Tamaño: {file.file_size} bytes"
-        # responder al mensaje
         logger.error(f"{msgError}", exc_info=False)
-
 
     except Exception as e:
         logger.error(f"Error al guardar el archivo en disco: {e}", exc_info=True)
