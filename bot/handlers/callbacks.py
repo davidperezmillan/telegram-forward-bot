@@ -34,19 +34,21 @@ async def button_callback(update, context):
 
         if action == "forward":
             await forward_media_to_target(context, entry["media_type"], entry["file_id"])
-            await delete_original_message(entry["chat_id"], entry["message_id"], context)
-            await delete_original_message(query.message.chat_id, query.message.message_id, context)
+            await delete_all_messages(context, query, entry)
         elif action == "save":
-            await save_media_to_disk(context, entry["media_type"], entry["file_id"], query.message.chat_id,)
+            msg_alt_id = await save_media_to_disk(context, entry["media_type"], entry["file_id"], entry["chat_id"])
+            # Verificar si la clave "message_alt_id" existe, si no, inicializarla como una lista vacía
+            entry.setdefault("message_alt_id", []).append(msg_alt_id)
+            logger.info(f"Mensaje {entry} guardado en disco.")
         elif action == "discard":
-            await delete_original_message(entry["chat_id"], entry["message_id"], context)
-            await delete_original_message(query.message.chat_id, query.message.message_id, context)
+            await delete_all_messages(context, query, entry)
             logger.info(f"Mensaje {entry['message_id']} descartado.")
         
 
 
     except Exception as e:
         logger.error(f"Error manejando callback del botón: {e}", exc_info=True)
+
 
     # MEDIA_CACHE.pop(short_id, None)
 
@@ -75,10 +77,11 @@ async def save_media_to_disk(context, media_type, file_id, chat_bot_id):
                     logger.info(f"Archivo guardado en disco: {file_path}")
 
                     # editar mensaje
-                    await context.bot.send_message(
+                    msg_alt_id = await context.bot.send_message(
                         chat_id=chat_bot_id,    
                         text=f"✅ Archivo descargado correctamente"
                     )
+                    return msg_alt_id.message_id
                 else:
                     logger.error(f"Error al descargar el archivo: HTTP {response.status}")
     except TelegramError as e:
@@ -90,3 +93,12 @@ async def save_media_to_disk(context, media_type, file_id, chat_bot_id):
 
     except Exception as e:
         logger.error(f"Error al guardar el archivo en disco: {e}", exc_info=True)
+
+
+
+async def delete_all_messages(context, query, entry):
+    await delete_original_message(entry["chat_id"], entry["message_id"], context)
+    if "message_alt_id" in entry:
+        for msg_id in entry["message_alt_id"]:
+            await delete_original_message(entry["chat_id"], msg_id, context)
+    await delete_original_message(query.message.chat_id, query.message.message_id, context)

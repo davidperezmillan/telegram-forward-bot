@@ -34,6 +34,14 @@ async def forward_media(update, context):
                 "media_type": media_type,
                 "file_id": file_id,
             }
+            textButton = MSG["choose_action"]
+            try:
+                file = await context.bot.get_file(file_id)
+                if file:
+                    textButton += f"\n{file.file_size / (1024 * 1024):.2f} MB"
+            except Exception as e:
+                logger.error(f"Error al obtener el archivo: {e}", exc_info=False)
+                textButton += "\n(Error al obtener el tamaño del archivo)"
 
             keyboard = InlineKeyboardMarkup(
                 [
@@ -45,7 +53,7 @@ async def forward_media(update, context):
                 ]
             )
             await update.message.reply_text(
-                MSG["choose_action"],
+                textButton,
                 reply_markup=keyboard,
             )
         else:
