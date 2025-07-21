@@ -38,9 +38,7 @@ async def button_callback(update, context):
         elif action == "save":
             msg_alt_id = await save_media_to_disk(context, entry["media_type"], entry["file_id"], entry["chat_id"])
             # Verificar si la clave "message_alt_id" existe, si no, inicializarla como una lista vacía
-            if "message_alt_id" not in entry:
-                entry["message_alt_id"] = []
-            entry["message_alt_id"].append(msg_alt_id)
+            entry.setdefault("message_alt_id", []).append(msg_alt_id)
             logger.info(f"Mensaje {entry} guardado en disco.")
         elif action == "discard":
             await delete_all_messages(context, query, entry)
