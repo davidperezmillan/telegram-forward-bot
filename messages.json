@@ -1,5 +1,5 @@
 {
-    "choose_action": "¿Quieres reenviar o descartar este mensaje?",
+    "choose_action": "Mensaje de {chat_origen} que hacemos?",
     "forward_button": "➡️ Reenviar",
     "discard_button": "❌ Descartar",
     "save_button": "Guardar en disco",
