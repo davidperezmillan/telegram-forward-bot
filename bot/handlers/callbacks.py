@@ -33,7 +33,7 @@ async def button_callback(update, context):
     try:
 
         if action == "forward":
-            await forward_media_to_target(context, entry["media_type"], entry["file_id"])
+            await forward_media_to_target(context, entry["target_chat_id"], entry["media_type"], entry["file_id"])
             await delete_all_messages(context, query, entry)
         elif action == "save":
             msg_alt_id = await save_media_to_disk(context, entry["media_type"], entry["file_id"], entry["chat_id"])
