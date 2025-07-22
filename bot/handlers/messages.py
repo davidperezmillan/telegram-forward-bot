@@ -35,7 +35,7 @@ async def forward_media(update, context):
                 "file_id": file_id,
             }
             ## recuperamos el chat de origen
-            chat_origen = update.message.forward_origin.chat.title if update.message.forward_origin else "Directo"
+            chat_origen = update.message.forward_origin.chat.title if update.message.forward_origin and update.message.forward_origin.chat else "Directo"
             textButton = MSG["choose_action"].format(
                 #short_id=short_id,
                 chat_origen=chat_origen,
