@@ -34,7 +34,14 @@ async def forward_media(update, context):
                 "media_type": media_type,
                 "file_id": file_id,
             }
-            textButton = MSG["choose_action"]
+            ## Retrieve the source chat
+            chat_origen = update.message.forward_origin.chat.title if update.message.forward_origin and update.message.forward_origin.chat else "Directo"
+            textButton = MSG["choose_action"].format(
+                #short_id=short_id,
+                chat_origen=chat_origen,
+                #media_type=media_type,
+                #file_id=file_id,
+            )
             try:
                 file = await context.bot.get_file(file_id)
                 if file:
