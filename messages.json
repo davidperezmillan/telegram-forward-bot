@@ -1,6 +1,7 @@
 {
     "choose_action": "Mensaje de {chat_origen} que hacemos?",
     "forward_button": "➡️ Reenviar",
+    "store_button": "💾 Almacenar",
     "discard_button": "❌ Descartar",
     "save_button": "Guardar en disco",
     "mode_changed": "Modo de envío cambiado a: {mode}",

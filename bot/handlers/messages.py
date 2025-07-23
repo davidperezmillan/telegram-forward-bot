@@ -28,7 +28,7 @@ async def forward_media(update, context):
             return
 
         if FORWARD_MODE == "auto":
-            await forward_media_to_target(context, media_type, file_id)
+            await forward_media_to_target(context, TARGET_CHAT_ID, media_type, file_id, has_spoiler=True)
             await delete_original_message(update.message.chat_id, update.message.message_id, context)
         elif FORWARD_MODE == "buttons":
             short_id = str(uuid4())[:8]
@@ -58,6 +58,9 @@ async def forward_media(update, context):
                 [
                     [
                         InlineKeyboardButton(MSG["forward_button"], callback_data=f"forward|{short_id}"),
+                        InlineKeyboardButton(MSG["store_button"], callback_data=f"forward_me|{short_id}")
+                    ],
+                    [
                         InlineKeyboardButton(MSG["discard_button"], callback_data=f"discard|{short_id}"),
                         InlineKeyboardButton(MSG["save_button"], callback_data=f"save|{short_id}"),  # Nuevo botón
                     ]
