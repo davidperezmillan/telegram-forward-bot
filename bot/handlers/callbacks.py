@@ -1,5 +1,5 @@
 import os
-from config import MEDIA_CACHE, logger
+from config import MEDIA_CACHE, TARGET_CHAT_ID, TARGET_CHAT_ID_ME, logger
 import aiohttp
 from utils.forward import forward_media_to_target
 from utils.helpers import delete_original_message
@@ -33,8 +33,12 @@ async def button_callback(update, context):
     try:
 
         if action == "forward":
-            await forward_media_to_target(context, entry["media_type"], entry["file_id"])
+            await forward_media_to_target(context, TARGET_CHAT_ID, entry["media_type"], entry["file_id"], has_spoiler=True)
             await delete_all_messages(context, query, entry)
+        elif action == "forward_me":
+            await forward_media_to_target(context, TARGET_CHAT_ID_ME, entry["media_type"], entry["file_id"], has_spoiler=False)
+            await delete_all_messages(context, query, entry)
+            logger.info(f"Mensaje {entry['message_id']} reenviado a {query.message.chat_id}.")
         elif action == "save":
             msg_alt_id = await save_media_to_disk(context, entry["media_type"], entry["file_id"], entry["chat_id"])
             # Verificar si la clave "message_alt_id" existe, si no, inicializarla como una lista vacía

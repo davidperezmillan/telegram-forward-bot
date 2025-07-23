@@ -6,6 +6,7 @@ services:
     environment:
       - TELEGRAM_TOKEN=${TELEGRAM_TOKEN} # Token del bot que escucha
       - TARGET_CHAT_ID=${TARGET_CHAT_ID}
+      - TARGET_CHAT_ID_ME=${TARGET_CHAT_ID_ME}
       - FORWARD_MODE=${FORWARD_MODE}
     volumes:
       - ${DOWNLOAD_DIR}:/app/media
