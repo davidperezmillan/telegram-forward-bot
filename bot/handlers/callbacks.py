@@ -37,7 +37,8 @@ async def button_callback(update, context):
             await delete_all_messages(context, query, entry)
         elif action == "forward_me":
             await forward_media_to_target(context, TARGET_CHAT_ID_ME, entry["media_type"], entry["file_id"], has_spoiler=False)
-            await delete_all_messages(context, query, entry)
+            # Eliminar el mensaje original y los mensajes alternativos
+            # await delete_all_messages(context, query, entry)
             logger.info(f"Mensaje {entry['message_id']} reenviado a {TARGET_CHAT_ID_ME}.")
         elif action == "save":
             msg_alt_id = await save_media_to_disk(context, entry["media_type"], entry["file_id"], entry["chat_id"])
