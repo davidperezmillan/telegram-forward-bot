@@ -2,13 +2,17 @@ from config import FORWARD_MODE, MEDIA_CACHE, TARGET_CHAT_ID, MSG, logger
 from utils.helpers import delete_original_message
 from utils.forward import forward_media_to_target
 from uuid import uuid4
+from pprint import pformat
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 
 async def forward_media(update, context):
     global FORWARD_MODE
     logger.info(f"Mensaje recibido de {update.message.chat_id}")
-    logger.info(f"Chat de destino: {TARGET_CHAT_ID}")
     logger.info(f"Modo de reenvío: {FORWARD_MODE}")
+
+    # Usar pformat para formatear el objeto y registrarlo con logger
+    logger.info(f"update: {pformat(update)}")
+
     try:
         media_type = None
         file_id = None
