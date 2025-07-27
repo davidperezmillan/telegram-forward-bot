@@ -1,6 +1,7 @@
 from config import FORWARD_MODE, MEDIA_CACHE, TARGET_CHAT_ID, MSG, logger
 from utils.helpers import delete_original_message
 from utils.forward import forward_media_to_target
+from handlers.message_logger import log_message, MessageData
 from uuid import uuid4
 from pprint import pformat
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
@@ -12,6 +13,18 @@ async def forward_media(update, context):
 
     # Usar pformat para formatear el objeto y registrarlo con logger
     logger.info(f"update: {pformat(update)}")
+
+    ## Retrieve the source chat
+    chat_origen_title = update.message.forward_origin.chat.title if update.message.forward_origin and update.message.forward_origin.chat else "Directo"
+    # Crear objeto MessageData
+    message_data = MessageData(
+        chat_id=update.message.chat_id,
+        message_id=update.message.message_id,
+        chat_origen_title=chat_origen_title,
+        #media_type=media_type,
+        #file_id=file_id,
+    )
+
 
     try:
         media_type = None
@@ -26,8 +39,14 @@ async def forward_media(update, context):
         else:
             logger.warning("Mensaje recibido sin imagen ni vídeo.")
             return
+        
+        message_data.media_type = media_type
+        message_data.file_id = file_id
+
+        log_message("received", message_data)
 
         if FORWARD_MODE == "auto":
+            log_message("received", update.message.chat_id, update.message.message_id, media_type, file_id)
             await forward_media_to_target(context, TARGET_CHAT_ID, media_type, file_id, has_spoiler=True)
             await delete_original_message(update.message.chat_id, update.message.message_id, context)
         elif FORWARD_MODE == "buttons":
@@ -37,12 +56,13 @@ async def forward_media(update, context):
                 "message_id": update.message.message_id,
                 "media_type": media_type,
                 "file_id": file_id,
+                #"chat_origen": update.message.forward_origin.chat.id if update.message.forward_origin else None,
+                "chat_origen_title": chat_origen_title,
             }
-            ## Retrieve the source chat
-            chat_origen = update.message.forward_origin.chat.title if update.message.forward_origin and update.message.forward_origin.chat else "Directo"
+            
             textButton = MSG["choose_action"].format(
                 #short_id=short_id,
-                chat_origen=chat_origen,
+                chat_origen_title=chat_origen_title,
                 #media_type=media_type,
                 #file_id=file_id,
             )
