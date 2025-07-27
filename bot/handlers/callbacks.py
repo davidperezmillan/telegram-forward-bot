@@ -3,6 +3,7 @@ from config import MEDIA_CACHE, TARGET_CHAT_ID, TARGET_CHAT_ID_ME, logger
 import aiohttp
 from utils.forward import forward_media_to_target
 from utils.helpers import delete_original_message
+from handlers.message_logger import log_message, MessageData
 from telegram.error import TelegramError
 
 
@@ -30,13 +31,25 @@ async def button_callback(update, context):
         logger.warning(f"No se encontró cache para short_id {short_id}")
         return
 
+    # Log the entry for debugging
+    message_data = MessageData(
+        chat_id=entry["chat_id"],
+        message_id=entry["message_id"],
+        chat_origen=entry.get("chat_origen", None),
+        chat_origen_title=entry.get("chat_origen_title", None),
+        file_id=entry.get("file_id", None),
+        media_type=entry.get("media_type", None),
+    )
+
     try:
 
         if action == "forward":
             await forward_media_to_target(context, TARGET_CHAT_ID, entry["media_type"], entry["file_id"], has_spoiler=True)
+            log_message("forwarded", message_data)
             await delete_all_messages(context, query, entry)
         elif action == "forward_me":
             await forward_media_to_target(context, TARGET_CHAT_ID_ME, entry["media_type"], entry["file_id"], has_spoiler=False)
+            log_message("forwarded_me", message_data)
             # Eliminar el mensaje original y los mensajes alternativos
             # await delete_all_messages(context, query, entry)
             logger.info(f"Mensaje {entry['message_id']} reenviado a {TARGET_CHAT_ID_ME}.")
