@@ -40,7 +40,7 @@ async def forward_media(update, context):
             media_type = "gif"
             file_id = update.message.animation.file_id
         else:
-            logger.warning("Mensaje recibido sin imagen ni vídeo.")
+            logger.warning("Mensaje recibido sin imagen, vídeo ni GIF.")
             return
         
         message_data.media_type = media_type
