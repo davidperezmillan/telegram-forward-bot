@@ -9,7 +9,9 @@ if __name__ == "__main__":
     app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
 
     app.add_handler(CommandHandler("modo", set_mode))
-    app.add_handler(MessageHandler(filters.PHOTO | filters.VIDEO, forward_media))
+    app.add_handler(MessageHandler(filters.PHOTO, forward_media))
+    app.add_handler(MessageHandler(filters.VIDEO, forward_media))
+    app.add_handler(MessageHandler(filters.ANIMATION, forward_media))
     app.add_handler(CallbackQueryHandler(button_callback))
 
     app.run_polling()
