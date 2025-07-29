@@ -59,6 +59,8 @@ async def button_callback(update, context):
                     ]
                 ])
             )
+            # Store the button_delete message ID for cleanup
+            entry.setdefault("confirmation_message_id", []).append(button_delete.message_id)
             logger.info(f"Mensaje {entry['message_id']} reenviado a {TARGET_CHAT_ID_ME}.")
         elif action == "save":
             msg_alt_id = await save_media_to_disk(context, entry["media_type"], entry["file_id"], entry["chat_id"])
