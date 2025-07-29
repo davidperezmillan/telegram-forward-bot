@@ -5,7 +5,7 @@ from utils.forward import forward_media_to_target
 from utils.helpers import delete_original_message
 from handlers.message_logger import log_message, MessageData
 from telegram.error import TelegramError
-
+from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 
 # Ruta donde se guardarán los archivos
 MEDIA_SAVE_PATH = "./media/"
@@ -50,8 +50,15 @@ async def button_callback(update, context):
         elif action == "forward_me":
             await forward_media_to_target(context, TARGET_CHAT_ID_ME, entry["media_type"], entry["file_id"], has_spoiler=False)
             log_message("forwarded_me", message_data)
-            # Eliminar el mensaje original y los mensajes alternativos
-            # await delete_all_messages(context, query, entry)
+            button_delete = await query.message.reply_text(
+                "¿Quieres borrar el mensaje después de almacenarlo?",
+                reply_markup=InlineKeyboardMarkup([
+                    [
+                        InlineKeyboardButton("Sí", callback_data=f"delete_after_store|{short_id}|yes"),
+                        InlineKeyboardButton("No", callback_data=f"delete_after_store|{short_id}|no")
+                    ]
+                ])
+            )
             logger.info(f"Mensaje {entry['message_id']} reenviado a {TARGET_CHAT_ID_ME}.")
         elif action == "save":
             msg_alt_id = await save_media_to_disk(context, entry["media_type"], entry["file_id"], entry["chat_id"])
@@ -61,6 +68,14 @@ async def button_callback(update, context):
         elif action == "discard":
             await delete_all_messages(context, query, entry)
             logger.info(f"Mensaje {entry['message_id']} descartado.")
+        elif action == "delete_after_store":
+            choice = data[2] if len(data) > 2 else "no"
+            if choice == "yes":
+                # Eliminar el mensaje original y los mensajes alternativos
+                await delete_all_messages(context, query, entry)
+                logger.info(f"Mensaje {entry['message_id']} eliminado después de ser almacenado.")
+            else:
+                logger.info(f"Mensaje {entry['message_id']} no eliminado después de ser almacenado.")
         
 
 
