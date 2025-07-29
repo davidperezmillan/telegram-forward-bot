@@ -89,10 +89,13 @@ async def forward_media(update, context):
                     ]
                 ]
             )
-            await update.message.reply_text(
+            msg_callback = await update.message.reply_text(
                 textButton,
                 reply_markup=keyboard,
             )
+            # Guardar el ID del mensaje alternativo para futuras referencias
+            msg_alt_id = msg_callback.message_id
+            MEDIA_CACHE[short_id].setdefault("message_alt_id", []).append(msg_alt_id)
         else:
             logger.warning(f"Variable FORWARD_MODE tiene un valor desconocido: {FORWARD_MODE}")
 
