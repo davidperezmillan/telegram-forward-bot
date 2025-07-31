@@ -50,8 +50,11 @@ async def button_callback(update, context):
         elif action == "forward_me":
             await forward_media_to_target(context, TARGET_CHAT_ID_ME, entry["media_type"], entry["file_id"], has_spoiler=False)
             log_message("forwarded_me", message_data)
-            button_delete = await query.message.reply_text(
-                "¿Quieres borrar el mensaje después de almacenarlo?",
+             # Reenviar el mensaje original con botones
+            button_delete = await context.bot.copy_message(
+                chat_id=query.message.chat_id,  # Reenviar al mismo chat
+                from_chat_id=query.message.chat_id,  # Desde el mismo chat
+                message_id=query.message.message_id,  # ID del mensaje original
                 reply_markup=InlineKeyboardMarkup([
                     [
                         InlineKeyboardButton("Sí", callback_data=f"delete_after_store|{short_id}|yes"),
