@@ -6,6 +6,12 @@
     "save_button": "Guardar en disco",
     "mode_changed": "Modo de envío cambiado a: {mode}",
     "mode_toggled": "Modo de envío alternado a: {mode}",
-    "mode_usage": "Uso: /modo [auto|buttons]"
+    "mode_usage": "Uso: /modo [auto|buttons]",
+    "frases_forward": [
+      "Quiero esto",
+      "Hazmelo",
+      "Me gustaria verte asi",
+      "Deberiamos probar"
+  ]
   }
   
