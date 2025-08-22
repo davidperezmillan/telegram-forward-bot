@@ -1,6 +1,7 @@
 import os
-from config import MEDIA_CACHE, TARGET_CHAT_ID, TARGET_CHAT_ID_ME, logger
+from config import MEDIA_CACHE, TARGET_CHAT_ID, TARGET_CHAT_ID_ME, MSG, logger
 import aiohttp
+import random 
 from utils.forward import forward_media_to_target
 from utils.helpers import delete_original_message
 from handlers.message_logger import log_message, MessageData
@@ -44,7 +45,13 @@ async def button_callback(update, context):
     try:
 
         if action == "forward":
-            await forward_media_to_target(context, TARGET_CHAT_ID, entry["media_type"], entry["file_id"], has_spoiler=True)
+            # recuperar un mensaje aleatorio de MSG[frases_forward]
+            if "frases_forward" in MSG and isinstance(MSG["frases_forward"], list):
+                text = random.choice(MSG["frases_forward"])
+            else:
+                text = "Mensaje predeterminado"  # Mensaje por defecto si no hay frases disponibles
+
+            await forward_media_to_target(context, TARGET_CHAT_ID, entry["media_type"], entry["file_id"], has_spoiler=True, text=text)
             log_message("forwarded", message_data)
             await delete_all_messages(context, query, entry)
         elif action == "forward_me":
@@ -140,3 +147,4 @@ async def delete_all_messages(context, query, entry):
         for msg_id in entry["message_alt_id"]:
             await delete_original_message(entry["chat_id"], msg_id, context)
     await delete_original_message(query.message.chat_id, query.message.message_id, context)
+
