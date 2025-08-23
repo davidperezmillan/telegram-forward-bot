@@ -14,6 +14,40 @@ MEDIA_SAVE_PATH = "./media/"
 # Asegúrate de que la carpeta exista
 os.makedirs(MEDIA_SAVE_PATH, exist_ok=True)
 
+
+async def handle_caption(update, context):
+    user_message = update.message.text
+    chat_id = update.message.chat_id
+
+    # Buscar el entry correspondiente en MEDIA_CACHE
+    for short_id, entry in MEDIA_CACHE.items():
+        if entry.get("awaiting_caption") and entry["chat_id"] == chat_id:
+            # Reenviar el mensaje con el caption proporcionado
+            await forward_media_to_target(
+                context,
+                TARGET_CHAT_ID,
+                entry["media_type"],
+                entry["file_id"],
+                has_spoiler=True,
+                text=user_message
+            )
+            # log_message("forwarded", entry)
+             # Esperar el mensaje del usuario (caption)
+            entry.setdefault("message_alt_id", []).append(update.message.message_id)
+
+            await delete_all_messages(context, entry["query"], entry)
+
+            # Limpiar el estado
+            entry.pop("awaiting_caption", None)
+            MEDIA_CACHE[short_id] = entry
+            return
+
+    # Si no se encuentra el estado, enviar un mensaje de error
+    await context.bot.send_message(
+        chat_id=chat_id,
+        text="No se encontró el mensaje para reenviar. Por favor, intenta nuevamente."
+    )
+
 async def button_callback(update, context):
     query = update.callback_query
     await query.answer()
@@ -45,15 +79,18 @@ async def button_callback(update, context):
     try:
 
         if action == "forward":
-            # recuperar un mensaje aleatorio de MSG[frases_forward]
-            if "frases_forward" in MSG and isinstance(MSG["frases_forward"], list):
-                text = random.choice(MSG["frases_forward"])
-            else:
-                text = "Mensaje predeterminado"  # Mensaje por defecto si no hay frases disponibles
+            # Solicitar el caption al usuario
+            caption_request = await context.bot.send_message(
+                chat_id=query.message.chat_id,
+                text="Por favor, escribe el caption que deseas incluir al reenviar el mensaje."
+            )
+            entry.setdefault("message_alt_id", []).append(caption_request.message_id)
+            # Guardar el estado en MEDIA_CACHE
+            entry["awaiting_caption"] = True
+            entry["query"] = query
+            MEDIA_CACHE[short_id] = entry
 
-            await forward_media_to_target(context, TARGET_CHAT_ID, entry["media_type"], entry["file_id"], has_spoiler=True, text=text)
-            log_message("forwarded", message_data)
-            await delete_all_messages(context, query, entry)
+            
         elif action == "forward_me":
             await forward_media_to_target(context, TARGET_CHAT_ID_ME, entry["media_type"], entry["file_id"], has_spoiler=False)
             log_message("forwarded_me", message_data)
@@ -70,7 +107,7 @@ async def button_callback(update, context):
                 ])
             )
             # Store the button_delete message ID for cleanup
-            entry.setdefault("confirmation_message_id", []).append(button_delete.message_id)
+            entry.setdefault("message_alt_id", []).append(button_delete.message_id)
             logger.info(f"Mensaje {entry['message_id']} reenviado a {TARGET_CHAT_ID_ME}.")
         elif action == "save":
             msg_alt_id = await save_media_to_disk(context, entry["media_type"], entry["file_id"], entry["chat_id"])
