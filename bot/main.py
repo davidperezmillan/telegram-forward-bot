@@ -2,7 +2,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, Cal
 from config import TELEGRAM_TOKEN, logger
 from handlers.commands import set_mode
 from handlers.messages import forward_media
-from handlers.callbacks import button_callback
+from handlers.callbacks import button_callback, handle_caption
 
 if __name__ == "__main__":
     logger.info("Iniciando bot de Telegram...")
@@ -13,5 +13,6 @@ if __name__ == "__main__":
     app.add_handler(MessageHandler(filters.VIDEO, forward_media))
     app.add_handler(MessageHandler(filters.ANIMATION, forward_media))
     app.add_handler(CallbackQueryHandler(button_callback))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_caption))  # Capturar el caption
 
     app.run_polling()
