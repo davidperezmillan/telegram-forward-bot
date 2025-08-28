@@ -1,6 +1,7 @@
 {
     "choose_action": "Mensaje de {chat_origen_title} que hacemos?",
     "forward_button": "➡️ Reenviar",
+    "forward_caption_button": "Enviar con leyenda",
     "store_button": "💾 Almacenar",
     "discard_button": "❌ Descartar",
     "save_button": "Guardar en disco",

@@ -79,6 +79,10 @@ async def button_callback(update, context):
     try:
 
         if action == "forward":
+            await forward_media_to_target(context, TARGET_CHAT_ID, entry["media_type"], entry["file_id"], has_spoiler=True)
+            log_message("forwarded", message_data)
+            await delete_all_messages(context, query, entry)
+        elif action == "forward_with_caption":
             # Solicitar el caption al usuario
             caption_request = await context.bot.send_message(
                 chat_id=query.message.chat_id,
