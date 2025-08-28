@@ -15,7 +15,9 @@ async def forward_media(update, context):
     logger.info(f"update: {pformat(update)}")
 
     ## Retrieve the source chat
-    chat_origen_title = update.message.forward_origin.chat.title if update.message.forward_origin and update.message.forward_origin.chat else "Directo"
+    chat_origen_title = await get_chat_origen_title(update)
+    
+    
     # Crear objeto MessageData
     message_data = MessageData(
         chat_id=update.message.chat_id,
@@ -102,3 +104,19 @@ async def forward_media(update, context):
 
     except Exception as e:
         logger.error(f"Error manejando mensaje recibido: {e}", exc_info=True)
+
+
+
+async def get_chat_origen_title(update):
+    chat_origen_title = "Unknown"
+    try:
+        logger.info(f"Forward origin??: {update.message}")
+        if update.message.forward_origin:
+            if update.message.forward_origin.chat:
+                chat_origen_title = update.message.forward_origin.chat.title
+            elif update.message.forward_origin.sender_user:
+                chat_origen_title = update.message.forward_origin.sender_user.first_name
+    except Exception as e:
+        logger.error(f"Error obteniendo el chat de origen: {e}", exc_info=True)
+
+    return chat_origen_title
