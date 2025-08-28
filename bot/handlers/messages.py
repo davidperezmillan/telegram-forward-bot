@@ -81,9 +81,10 @@ async def forward_media(update, context):
                 [
                     [
                         InlineKeyboardButton(MSG["forward_button"], callback_data=f"forward|{short_id}"),
-                        InlineKeyboardButton(MSG["store_button"], callback_data=f"forward_me|{short_id}")
+                        InlineKeyboardButton(MSG["forward_caption_button"], callback_data=f"forward_with_caption|{short_id}")
                     ],
                     [
+                        InlineKeyboardButton(MSG["store_button"], callback_data=f"forward_me|{short_id}"),
                         InlineKeyboardButton(MSG["discard_button"], callback_data=f"discard|{short_id}"),
                         InlineKeyboardButton(MSG["save_button"], callback_data=f"save|{short_id}"),  # Nuevo botón
                     ]
