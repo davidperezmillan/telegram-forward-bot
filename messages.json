@@ -1,6 +1,6 @@
 {
     "choose_action": "Mensaje de {chat_origen_title} que hacemos?",
-    "forward_button": "➡️ Reenviar",
+    "forward_button": "Enviar sin mas",
     "forward_caption_button": "Enviar con leyenda",
     "store_button": "💾 Almacenar",
     "discard_button": "❌ Descartar",
@@ -8,6 +8,8 @@
     "mode_changed": "Modo de envío cambiado a: {mode}",
     "mode_toggled": "Modo de envío alternado a: {mode}",
     "mode_usage": "Uso: /modo [auto|buttons]",
+    "hora_barrido": "19",
+    "minuto_barrido": "00",
     "frases_forward": [
       "Quiero esto",
       "Hazmelo",
