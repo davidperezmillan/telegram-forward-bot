@@ -49,8 +49,8 @@ async def delete_all_messages(context, entry):
 if __name__ == "__main__":
     logger.info("Iniciando bot de Telegram...")
     
-    hour = MSG.get("hora_barrido", 20)
-    minute = MSG.get("minuto_barrido", 0)
+    hour = int(MSG.get("hora_barrido", 20))
+    minute = int(MSG.get("minuto_barrido", 0))
 
     app = ApplicationBuilder().token(TELEGRAM_TOKEN).post_init(lambda app: app.job_queue.start()).build()
 
