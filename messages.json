@@ -8,7 +8,7 @@
     "mode_changed": "Modo de envío cambiado a: {mode}",
     "mode_toggled": "Modo de envío alternado a: {mode}",
     "mode_usage": "Uso: /modo [auto|buttons]",
-    "hora_barrido": "19",
+    "hora_barrido": "17",
     "minuto_barrido": "00",
     "frases_forward": [
       "Quiero esto",
