@@ -1,7 +1,7 @@
 import time  # Importa el módulo estándar de time
 from datetime import time as datetime_time  # Si necesitas usar datetime.time
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, CallbackQueryHandler, filters, ContextTypes
-from config import TELEGRAM_TOKEN, logger, MEDIA_CACHE, TARGET_CHAT_ID, MSG
+from config import TELEGRAM_TOKEN, logger, MEDIA_CACHE, TARGET_CHAT_ID, MSG, BARRIDOS
 from utils.helpers import delete_original_message
 from handlers.commands import set_mode
 from handlers.messages import forward_media
@@ -72,7 +72,7 @@ if __name__ == "__main__":
     app.add_handler(CallbackQueryHandler(button_callback))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_caption))  # Capturar el caption
 
-    barridos = MSG.get("barridos", [])
+    barridos = BARRIDOS
     if not barridos:
         logger.warning("No se han definido barridos en messages.json")
     else:
