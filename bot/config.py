@@ -22,6 +22,9 @@ if not TARGET_CHAT_ID_ME:
     raise ValueError("TARGET_CHAT_ID_ME must be set in the environment.")
 DEFAULT_FORWARD_MODE = os.getenv("FORWARD_MODE", "auto").lower()
 FORWARD_MODE = DEFAULT_FORWARD_MODE
+# para barridos, recupear de las variables de entorno un string separado por comas y convertirlo en una lista
+BARRIDOS = os.getenv("BARRIDOS", "").split(",")
+
 
 # Cache para medios
 MEDIA_CACHE = {}

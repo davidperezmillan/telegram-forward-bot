@@ -8,6 +8,7 @@ services:
       - TARGET_CHAT_ID=${TARGET_CHAT_ID}
       - TARGET_CHAT_ID_ME=${TARGET_CHAT_ID_ME}
       - FORWARD_MODE=${FORWARD_MODE}
+      - BARRIDOS=${BARRIDOS}
     volumes:
       - ${DOWNLOAD_DIR}:/app/media
       - ./logs:/app/logs
