@@ -8,8 +8,11 @@
     "mode_changed": "Modo de envío cambiado a: {mode}",
     "mode_toggled": "Modo de envío alternado a: {mode}",
     "mode_usage": "Uso: /modo [auto|buttons]",
-    "hora_barrido": "17",
-    "minuto_barrido": "00",
+    "barridos":[
+      "08:15",
+      "18:25",
+      "23:30"
+    ],
     "frases_forward": [
       "Quiero esto",
       "Hazmelo",
