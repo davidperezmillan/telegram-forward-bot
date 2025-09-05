@@ -1,4 +1,5 @@
-from datetime import time
+import time  # Importa el módulo estándar de time
+from datetime import time as datetime_time  # Si necesitas usar datetime.time
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, CallbackQueryHandler, filters, ContextTypes
 from config import TELEGRAM_TOKEN, logger, MEDIA_CACHE, TARGET_CHAT_ID, MSG
 from utils.helpers import delete_original_message
@@ -9,8 +10,9 @@ from utils.forward import forward_media_to_target
 
 
 
-async def send_videos_at_20(context: ContextTypes.DEFAULT_TYPE):
-    logger.info("Iniciando el envío automático de videos a las 20:00...")
+
+async def send_videos_at_barrido(context: ContextTypes.DEFAULT_TYPE):
+    logger.info("Iniciando proceso de envío automático de videos...")
     videos_to_delete = []
 
     for short_id, media_data in MEDIA_CACHE.items():
@@ -45,13 +47,22 @@ async def delete_all_messages(context, entry):
         for msg_id in entry["message_alt_id"]:
             await delete_original_message(entry["chat_id"], msg_id, context)
 
+def convertTime(horaMinuto):
+    """ quita dos horas a la hora recibida en formato HH:MM """
+    try:
+        hora = int(horaMinuto.split(":")[0]) - 2
+        minuto = int(horaMinuto.split(":")[1])
+        if hora < 0:
+            hora = 24 + hora
+        return f"{hora}:{minuto}"
+    except Exception as e:
+        logger.error(f"Error al convertir la hora {horaMinuto}: {e}", exc_info=True)
+        return horaMinuto  # Devuelve la hora original en caso de error
+
 
 if __name__ == "__main__":
     logger.info("Iniciando bot de Telegram...")
-    
-    hour = int(MSG.get("hora_barrido", 20))
-    minute = int(MSG.get("minuto_barrido", 0))
-
+  
     app = ApplicationBuilder().token(TELEGRAM_TOKEN).post_init(lambda app: app.job_queue.start()).build()
 
     app.add_handler(CommandHandler("modo", set_mode))
@@ -61,7 +72,29 @@ if __name__ == "__main__":
     app.add_handler(CallbackQueryHandler(button_callback))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_caption))  # Capturar el caption
 
-    # Programar el envío automático de videos a las 20:00
-    app.job_queue.run_daily(send_videos_at_20, time(hour=hour, minute=minute, second=0))
+    barridos = MSG.get("barridos", [])
+    if not barridos:
+        logger.warning("No se han definido barridos en messages.json")
+    else:
+        logger.info(f"Barridos configurados: {barridos}")
+        for barrido in barridos:
+            # llamamos a convertTime para ajustar la hora
+            hora, minuto = convertTime(barrido).split(":")
+            hora = int(hora)
+            minuto = int(minuto)
+            logger.info(f"Programando barrido a las {hora:02}:{minuto:02}")
+            # Programar el envío automático de videos a las hora especificada
+            app.job_queue.run_daily(
+                send_videos_at_barrido,
+                datetime_time(hour=hora, minute=minuto, second=0)  # Usa datetime.time aquí
+            )
+
+    ## logeamos todos los trabajos programados
+    for job in app.job_queue.jobs():
+        logger.info(f"Trabajo programado: {job}")
+
+    ## que hora es
+    logger.info(f"La hora actual es: {time.strftime('%H:%M:%S', time.localtime())}")    
+
 
     app.run_polling()
