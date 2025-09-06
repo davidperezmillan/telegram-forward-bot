@@ -1,7 +1,7 @@
 import time  # Importa el módulo estándar de time
 from datetime import time as datetime_time  # Si necesitas usar datetime.time
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, CallbackQueryHandler, filters, ContextTypes
-from config import TELEGRAM_TOKEN, logger, MEDIA_CACHE, TARGET_CHAT_ID, MSG, BARRIDOS
+from config import TELEGRAM_TOKEN, logger, MEDIA_CACHE, TARGET_CHAT_ID_ME, MSG, BARRIDOS
 from utils.helpers import delete_original_message
 from handlers.commands import set_mode
 from handlers.messages import forward_media
@@ -24,7 +24,7 @@ async def send_videos_at_barrido(context: ContextTypes.DEFAULT_TYPE):
             file_id = media_data["file_id"]
 
             # Reenviar el video al chat objetivo
-            await forward_media_to_target(context, TARGET_CHAT_ID, media_type, file_id, has_spoiler=True)
+            await forward_media_to_target(context, TARGET_CHAT_ID_ME, media_type, file_id, has_spoiler=True)
             await delete_all_messages(context,entry)
             logger.info(f"Video reenviado desde chat {chat_id}, mensaje {message_id}")
 
