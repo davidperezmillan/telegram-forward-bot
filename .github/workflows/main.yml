@@ -1,0 +1,19 @@
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: ${{ github.event.repository.name }}
+      VERSION: latest
+
+    steps:
+    - name: Deploy to Portainer
+      run: curl -X POST ${{ vars.WEBHOOKS_STACK_LATEST }}
