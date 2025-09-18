@@ -38,7 +38,7 @@ async def send_videos_at_barrido(context: ContextTypes.DEFAULT_TYPE):
         del MEDIA_CACHE[short_id]
         logger.info(f"Video con ID {short_id} eliminado del MEDIA_CACHE")
 
-    logger.info("Proceso de envío automático de videos completado.")
+    logger.info("Proceso de envío automático de videos completado satisfactoriamente.")
 
 
 async def delete_all_messages(context, entry):
