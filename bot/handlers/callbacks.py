@@ -37,9 +37,9 @@ async def handle_caption(update, context):
 
             await delete_all_messages(context, entry["query"], entry)
 
-            # Limpiar el estado
+            # Limpiar el estado y eliminar del caché
             entry.pop("awaiting_caption", None)
-            MEDIA_CACHE[short_id] = entry
+            MEDIA_CACHE.pop(short_id, None)  # Eliminar completamente del caché
             return
 
     # Si no se encuentra el estado, enviar un mensaje de error
@@ -82,6 +82,8 @@ async def button_callback(update, context):
             await forward_media_to_target(context, TARGET_CHAT_ID, entry["media_type"], entry["file_id"], has_spoiler=True)
             log_message("forwarded", message_data)
             await delete_all_messages(context, query, entry)
+            # Eliminar la entrada del MEDIA_CACHE después de reenviar
+            MEDIA_CACHE.pop(short_id, None)
         elif action == "forward_with_caption":
             # Solicitar el caption al usuario
             caption_request = await context.bot.send_message(
@@ -120,14 +122,20 @@ async def button_callback(update, context):
             logger.info(f"Mensaje {entry} guardado en disco.")
         elif action == "discard":
             await delete_all_messages(context, query, entry)
-            logger.info(f"Mensaje {entry['message_id']} descartado.")
+            # Eliminar la entrada del MEDIA_CACHE después de descartar
+            MEDIA_CACHE.pop(short_id, None)
+            logger.info(f"Mensaje {entry['message_id']} descartado y eliminado del caché.")
         elif action == "delete_after_store":
             choice = data[2] if len(data) > 2 else "no"
             if choice == "yes":
                 # Eliminar el mensaje original y los mensajes alternativos
                 await delete_all_messages(context, query, entry)
+                # Eliminar la entrada del MEDIA_CACHE después de eliminar los mensajes
+                MEDIA_CACHE.pop(short_id, None)
                 logger.info(f"Mensaje {entry['message_id']} eliminado después de ser almacenado.")
             else:
+                # Solo eliminar el mensaje de confirmación pero mantener el caché
+                await delete_original_message(query.message.chat_id, query.message.message_id, context)
                 logger.info(f"Mensaje {entry['message_id']} no eliminado después de ser almacenado.")
         
 
@@ -135,8 +143,6 @@ async def button_callback(update, context):
     except Exception as e:
         logger.error(f"Error manejando callback del botón: {e}", exc_info=True)
 
-
-    # MEDIA_CACHE.pop(short_id, None)
 
 async def save_media_to_disk(context, media_type, file_id, chat_bot_id):
     file = None
